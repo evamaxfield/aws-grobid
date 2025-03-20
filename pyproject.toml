@@ -28,11 +28,9 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
   "boto3>=1,<2",
-  "dataclasses-json>=0.6,<0.7",
   "Jinja2>=3,<4",
-  "python-dotenv>=1,<2",
+  "python-dotenv==1.0.1",
   "requests>=2,<3",
-  "typer>=0.9,<1",
 ]
 
 [project.urls]
@@ -107,8 +105,6 @@ extend-ignore = [
 ]
 
 [tool.ruff.per-file-ignores]
-"**/notebooks/*" = ["E501", "B018"]
-"**/publications/*" = ["E501", "B018"]
 "**/tests/*.py" = ["D"]
 
 [tool.mypy]
