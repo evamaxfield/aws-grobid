@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,7 +21,18 @@ from jinja2 import Template
 # Static files
 STATIC_DIR = Path(__file__).parent / "static"
 DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH = STATIC_DIR / "startup-script.jinja"
+NVIDIA_DOCKER_INSTALLATION_PATH = STATIC_DIR / "nvidia-docker-install.sh"
 UBUNTU_AMI_DATA_PATH = STATIC_DIR / "ubuntu-amis.json"
+
+GPU_INSTANCE_TYPES = [
+    "P",
+    "G",
+    "Trn",
+    "Inf",
+    "DL",
+    "F",
+    "VT",
+]
 
 #######################################################################################
 
@@ -108,6 +120,37 @@ def get_image_default_snapshot_id(
     return response["Images"][0]["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"]
 
 
+@dataclass
+class InstanceTypeDetails:
+    primary_type: str
+    attachments: str
+    size: str
+
+
+def _parse_instance_type(instance_type: str) -> InstanceTypeDetails:
+    # Split instance type into
+    # primary type (e.g. "M5")
+    # attachments (e.g. "a", "g")
+    # and size (e.g. "2xlarge")
+    match = re.match(
+        r"^([a-zA-Z]+)([0-9]{1})([a-zA-Z\-]*)\.([a-zA-Z0-9]+)$",
+        instance_type,
+    )
+
+    # Primary type is groups 1 and 2
+    # Attachments is group 3
+    # Size is group 4
+    if match:
+        primary_type = match.group(1) + match.group(2)
+        attachments = match.group(3)
+        size = match.group(4)
+        return InstanceTypeDetails(
+            primary_type=primary_type, attachments=attachments, size=size
+        )
+
+    raise ValueError(f"Instance type {instance_type} does not match expected format")
+
+
 def launch_instance(
     ec2_client: boto3.session.Session.client,
     ec2_resource: boto3.session.Session.resource,
@@ -121,6 +164,34 @@ def launch_instance(
     startup_script_template_path: str,
 ) -> boto3.resources.factory.ec2.Instance:
     """Launch an EC2 instance with the specified settings."""
+    # Parse instance type
+    instance_type_details = _parse_instance_type(instance_type)
+
+    # Determine if GPU instance requested from instance type
+    is_gpu_instance = any(
+        gpu.lower() in instance_type_details.primary_type.lower()
+        for gpu in GPU_INSTANCE_TYPES
+    )
+    if is_gpu_instance:
+        log.debug(f"Detected GPU instance type: {instance_type}")
+        # Need to install nvidia-docker on the instance
+        with open(NVIDIA_DOCKER_INSTALLATION_PATH) as open_f:
+            nvidia_docker_installation = open_f.read()
+        gpu_attach = "--gpus all --init --ulimit core=0"
+
+        # Handle larger storage requirement
+        if storage_size < 75:
+            log.warning(
+                "GPU instances require a minimum storage size of 75GB. "
+                "Increasing storage size to meet requirement."
+            )
+            storage_size = 96
+
+    else:
+        log.debug(f"Detected non-GPU instance type: {instance_type}")
+        nvidia_docker_installation = ""
+        gpu_attach = ""
+
     # Load the startup script template
     with open(startup_script_template_path) as f:
         startup_script_template = Template(f.read())
@@ -129,7 +200,13 @@ def launch_instance(
     startup_script = startup_script_template.render(
         docker_image=docker_image,
         api_port=api_port,
+        gpu_attach=gpu_attach,
+        nvidia_docker_install=nvidia_docker_installation,
     )
+
+    print("\n" * 4)
+    print(startup_script)
+    print("\n" * 4)
 
     # Load the AMI data from the JSON file
     with open(UBUNTU_AMI_DATA_PATH) as f:
@@ -137,26 +214,33 @@ def launch_instance(
 
     # Determine if we are looking for arm64 or x86_64/amd64 architecture
     # based on the instance type
-    primary_instance_type = instance_type.split(".")[0]
-    if "g" in primary_instance_type:
+    if "g" in instance_type_details.attachments:
         selected_arch = "arm64"
     else:
         selected_arch = "amd64"
 
     # Iter over ami data to find image id
-    # for the specified region and architecture
+    # for the specified region and architecture and gpu
     # example ami piece:
     vm_image_id = ""
     for ami_piece in ami_data:
-        if ami_piece["region"] == region and ami_piece["arch"] == selected_arch:
+        if (
+            ami_piece["region"] == region
+            and ami_piece["arch"] == selected_arch
+            and ami_piece["gpu"] == is_gpu_instance
+        ):
             vm_image_id = ami_piece["ami_id"]
             break
 
     # Handle not found
     if len(vm_image_id) == 0:
         raise ValueError(
-            f"No AMI found for region {region} and architecture {selected_arch}"
+            f"No AMI found for region {region}, "
+            f"architecture {selected_arch}, "
+            f"and GPU {is_gpu_instance} combination"
         )
+
+    print("detected vm_image_id: ", vm_image_id)
 
     # Create the EC2 instance
     instances = ec2_resource.create_instances(
@@ -227,9 +311,6 @@ class EC2InstanceDetails(DataClassJsonMixin):
     public_ip: str
     public_dns: str
     api_url: str
-
-
-# TODO: Add additional tags to the instance for better management and identification
 
 
 def launch_grobid_api_instance(

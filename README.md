@@ -31,8 +31,9 @@ aws_grobid.terminate_instance(
 )
 ```
 
+When providing an instance type that has GPUs available, we automatically pass the GPU flag to the GROBID service. This allows GROBID to utilize the GPU for processing, which can significantly speed up the extraction of information from documents.
+
 ## TODO
 
-- Add support for GPU detection w/ passthrough to docker container
 - Add support for GROBID base vs Software Mentions
 - Add support for passing additional tags to the instance
