@@ -9,3 +9,13 @@ except PackageNotFoundError:
 
 __author__ = "Eva Maxfield Brown"
 __email__ = "evamaxfieldbrown@gmail.com"
+
+from .core import deploy_and_wait_for_ready, terminate_instance
+
+__all__ = [
+    "deploy_and_wait_for_ready",
+    "terminate_instance",
+    "__version__",
+    "__author__",
+    "__email__",
+]

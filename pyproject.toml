@@ -68,7 +68,7 @@ include-package-data = true
 exclude = ["*docs/*", "*tests/*"]
 
 [tool.setuptools.package-data]
-"*" = ["*.yaml", "py.typed"]
+"*" = ["py.typed", "*.jinja", "*.json"]
 
 # tools
 [tool.black]
