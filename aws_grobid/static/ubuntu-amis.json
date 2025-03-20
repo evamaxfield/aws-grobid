@@ -1,0 +1,682 @@
+[
+    {
+        "region": "me-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-01bd9cab74e4931ba",
+        "image_type": "hvm"
+    },
+    {
+        "region": "sa-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d866da98d63e2b42",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-050f19c6ee04f419b",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-084568db4383264d4",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ca-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-08de9ad05f5a6bf2a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-01938df366ac2d954",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-026c39f4021df9abe",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0e3232c2663eadfd3",
+        "image_type": "hvm"
+    },
+    {
+        "region": "mx-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-08252046d3814a994",
+        "image_type": "hvm"
+    },
+    {
+        "region": "af-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0b7e05c6022fc830b",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0e35ddab05955cf57",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-north-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0c1ac8a41498c1a9c",
+        "image_type": "hvm"
+    },
+    {
+        "region": "il-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0ae7e1e8fb8251940",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-04f7a54071e74f488",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0df368112825f8d8f",
+        "image_type": "hvm"
+    },
+    {
+        "region": "me-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-09c1ab2520ee9181a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ca-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-08355844f8bc94f55",
+        "image_type": "hvm"
+    },
+    {
+        "region": "cn-northwest-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0aa528e5451a01aa9",
+        "image_type": "hvm"
+    },
+    {
+        "region": "cn-north-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-02481248579f4bf5a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-03250b0e01c28d196",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-09c7c4eaca75a44ed",
+        "image_type": "hvm"
+    },
+    {
+        "region": "me-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-086e30b22961c85d3",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ca-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-053ffaa3b2397f400",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0c4e709339fa8521a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-05496a1ee0671628e",
+        "image_type": "hvm"
+    },
+    {
+        "region": "sa-east-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-019878fc84059cb94",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-038e94aea55c0f480",
+        "image_type": "hvm"
+    },
+    {
+        "region": "af-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-09dd4909bbd5b7900",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ca-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0aecc40f3041e1323",
+        "image_type": "hvm"
+    },
+    {
+        "region": "mx-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-03f66a42faa59a9f1",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-06f9cd21395d0c9ec",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0bdb7aa9d654d4878",
+        "image_type": "hvm"
+    },
+    {
+        "region": "me-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0aa5d05bab8550a9d",
+        "image_type": "hvm"
+    },
+    {
+        "region": "il-central-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-09506cd1728c16de3",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-north-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-09fdd0b7882a4ec7b",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-south-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0429d68a1cd41ca80",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0bbd3f89449af0b30",
+        "image_type": "hvm"
+    },
+    {
+        "region": "cn-north-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-015ee295ee2d25381",
+        "image_type": "hvm"
+    },
+    {
+        "region": "cn-northwest-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-00130f6779f4dc0b3",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-west-1",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-01fe939b39edeeaa4",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0f5d1713c9af4fe30",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d5bb3742db8fc264",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-east-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-04f167a56786e4b09",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-south-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-099d45c12f4cc3edc",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-central-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-02e5b25bf94378a0c",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-west-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-075686beab831bb7f",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-south-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-053a0835435bf4f45",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0a94c8e4ca2674d5a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-064b0e4b6529b20cf",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-099eeb58169040255",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-east-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0ae6f07ad3a8ef182",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-central-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-00f2dffdfea591a60",
+        "image_type": "hvm"
+    },
+    {
+        "region": "us-west-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0e8c824f386e1de06",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-south-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d75a40cb78759773",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-south-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-06f72147557e70fa9",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-2",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-04c376b9db51e51bd",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-05212caffa4a257da",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-08a7bc2c4efd0df53",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0160e8d70ebc43ee1",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-northeast-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-060c8a2da11c7213b",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0230da38227b63e1a",
+        "image_type": "hvm"
+    },
+    {
+        "region": "eu-west-3",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0ae30afba46710143",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-4",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0633898896cb139bc",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-4",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-00583bca5d1ba0886",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-5",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d6547c3f05df32d3",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-5",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d1e6b63841c5267e",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-7",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "amd64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-0d968d1497ff9cf0c",
+        "image_type": "hvm"
+    },
+    {
+        "region": "ap-southeast-7",
+        "name": "Noble Numbat",
+        "version": "24.04 LTS",
+        "arch": "arm64",
+        "block_device_mapping": "hvm:ebs-ssd-gp3",
+        "build_date": 20250305,
+        "ami_id": "ami-08f3e969e66cd963a",
+        "image_type": "hvm"
+    }
+]
