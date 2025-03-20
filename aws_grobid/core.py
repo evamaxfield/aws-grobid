@@ -12,7 +12,6 @@ from pathlib import Path
 import boto3
 import boto3.session
 import requests
-from dataclasses_json import DataClassJsonMixin
 from dotenv import load_dotenv
 from jinja2 import Template
 
@@ -24,6 +23,7 @@ DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH = STATIC_DIR / "startup-script.jinja"
 NVIDIA_DOCKER_INSTALLATION_PATH = STATIC_DIR / "nvidia-docker-install.sh"
 UBUNTU_AMI_DATA_PATH = STATIC_DIR / "ubuntu-amis.json"
 
+# Constants
 GPU_INSTANCE_TYPES = [
     "P",
     "G",
@@ -162,6 +162,7 @@ def launch_instance(
     docker_image: str,
     api_port: int,
     startup_script_template_path: str,
+    tags: list[str] | dict[str, str] | None = None,
 ) -> boto3.resources.factory.ec2.Instance:
     """Launch an EC2 instance with the specified settings."""
     # Parse instance type
@@ -204,10 +205,6 @@ def launch_instance(
         nvidia_docker_install=nvidia_docker_installation,
     )
 
-    print("\n" * 4)
-    print(startup_script)
-    print("\n" * 4)
-
     # Load the AMI data from the JSON file
     with open(UBUNTU_AMI_DATA_PATH) as f:
         ami_data = json.load(f)
@@ -240,7 +237,18 @@ def launch_instance(
             f"and GPU {is_gpu_instance} combination"
         )
 
-    print("detected vm_image_id: ", vm_image_id)
+    # Parse tags
+    if tags is None:
+        tags = []
+    if isinstance(tags, list):
+        # Split each key-value pair into a new item in a dict
+        parsed_tags = [
+            {"Key": tag.split("=")[0], "Value": tag.split("=")[1]} for tag in tags
+        ]
+    elif isinstance(tags, dict):
+        parsed_tags = [{"Key": k, "Value": v} for k, v in tags.items()]
+    else:
+        raise ValueError("Tags must be a list or dict")
 
     # Create the EC2 instance
     instances = ec2_resource.create_instances(
@@ -278,6 +286,7 @@ def launch_instance(
                         "Key": "Name",
                         "Value": instance_name,
                     },
+                    *parsed_tags,  # Unpack the tags list
                 ],
             }
         ],
@@ -303,7 +312,7 @@ def launch_instance(
 
 
 @dataclass
-class EC2InstanceDetails(DataClassJsonMixin):
+class EC2InstanceDetails:
     instance: boto3.session.Session.resource.Instance
     region: str
     instance_id: str
@@ -317,6 +326,7 @@ def launch_grobid_api_instance(
     region: str = "us-west-2",
     instance_type: str = "m6a.4xlarge",
     storage_size: int = 28,
+    tags: list[str] | dict[str, str] | None = None,
     instance_name: str = "grobid-software-mentions-api-server",
     docker_image: str = "grobid/software-mentions:0.8.1",
     api_port: int = 8060,
@@ -365,6 +375,7 @@ def launch_grobid_api_instance(
         docker_image=docker_image,
         api_port=api_port,
         startup_script_template_path=startup_script_template_path,
+        tags=tags,
     )
     log.debug(f"Instance {instance.id} is now launching")
     log.debug("Waiting for instance to be running...")
@@ -439,6 +450,7 @@ def deploy_and_wait_for_ready(
     region: str = "us-west-2",
     instance_type: str = "m6a.4xlarge",
     storage_size: int = 28,
+    tags: list[str] | dict[str, str] | None = None,
     instance_name: str = "grobid-software-mentions-api-server",
     docker_image: str = "grobid/software-mentions:0.8.1",
     api_port: int = 8060,
@@ -456,6 +468,7 @@ def deploy_and_wait_for_ready(
         region=region,
         instance_type=instance_type,
         storage_size=storage_size,
+        tags=tags,
         instance_name=instance_name,
         docker_image=docker_image,
         api_port=api_port,

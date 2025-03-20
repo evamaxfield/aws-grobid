@@ -15,6 +15,9 @@ usermod -aG docker ubuntu
 # Possible NVIDIA Docker installation
 {{ nvidia_docker_install }}
 
+# Sleep after possible multiple docker restarts
+sleep 5
+
 # Pull and run the Docker image
 docker pull {{ docker_image }}
 docker run \
