@@ -34,6 +34,47 @@ GPU_INSTANCE_TYPES = [
     "VT",
 ]
 
+
+@dataclass
+class GROBIDDeploymentConfig:
+    instance_name: str
+    docker_image: str
+    api_port: int
+    security_group_name: str
+    security_group_description: str
+
+
+BASE_GROBID_LITE_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
+    instance_name="grobid-lite-api-server",
+    docker_image="lfoppiano/grobid:0.8.1",
+    api_port=8070,
+    security_group_name="grobid-lite-api-server-sg",
+    security_group_description="Security group for GROBID Lite API server",
+)
+
+BASE_GROBID_FULL_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
+    instance_name="grobid-full-api-server",
+    docker_image="grobid/grobid:0.8.1",
+    api_port=8070,
+    security_group_name="grobid-full-api-server-sg",
+    security_group_description="Security group for GROBID Full API server",
+)
+
+SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
+    instance_name="grobid-software-mentions-api-server",
+    docker_image="grobid/software-mentions:0.8.1",
+    api_port=8060,
+    security_group_name="grobid-software-mentions-api-server-sg",
+    security_group_description="Security group for GROBID Software Mentions API server",
+)
+
+
+class GROBIDDeploymentConfigs:
+    grobid_lite = BASE_GROBID_LITE_DEPLOYMENT_CONFIG
+    grobid_full = BASE_GROBID_FULL_DEPLOYMENT_CONFIG
+    software_mentions = SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG
+
+
 #######################################################################################
 
 log = logging.getLogger(__name__)
@@ -419,13 +460,19 @@ def terminate_instance(
 
 
 def wait_for_service_ready(
+    docker_image: str,
     api_url: str,
     timeout: int = 420,  # 7 minutes
     interval: int = 10,
 ) -> None:
     """Wait for the GROBID API service to be ready."""
+    # Determine API isalive URL by docker image name
+    if "software-mentions" in docker_image:
+        alive_url = f"{api_url}/service/isalive"
+    else:
+        alive_url = f"{api_url}/api/isalive"
+
     log.debug(f"Waiting for service at {api_url} to be ready...")
-    alive_url = f"{api_url}/service/isalive"
     start_time = time.time()
     while True:
         try:
@@ -447,39 +494,57 @@ def wait_for_service_ready(
 
 
 def deploy_and_wait_for_ready(
-    region: str = "us-west-2",
+    grobid_config: GROBIDDeploymentConfig = GROBIDDeploymentConfigs.grobid_lite,
     instance_type: str = "m6a.4xlarge",
     storage_size: int = 28,
+    region: str = "us-west-2",
     tags: list[str] | dict[str, str] | None = None,
-    instance_name: str = "grobid-software-mentions-api-server",
-    docker_image: str = "grobid/software-mentions:0.8.1",
-    api_port: int = 8060,
-    security_group_name: str = "grobid-software-mentions-api-server-sg",
-    security_group_description: str = (
-        "Security group for GROBID Software Mentions API server"
-    ),
     startup_script_template_path: str = str(DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH),
     timeout: int = 420,  # 7 minutes
     interval: int = 10,  # seconds
 ) -> EC2InstanceDetails:
-    """Deploy GROBID Software Mentions API and wait for it to be ready."""
+    """
+    Deploy GROBID server and wait for it to be ready.
+
+    Defaults to deploying the lightweight CRF only model GROBID server.
+
+    Parameters
+    ----------
+    grobid_config : GROBIDDeploymentConfig
+        The deployment configuration to use.
+    instance_type : str
+        The AWS instance type to deploy.
+    storage_size : int
+        The size of the storage volume to attach to the instance
+    region : str
+        The AWS region to deploy the instance in.
+    tags : list[str] | dict[str, str] | None
+        Tags to apply to the instance.
+    startup_script_template_path : str
+        Path to the Jinja2 template file for the startup script.
+    timeout : int
+        The maximum time to wait for the service to be ready. Default: 7 minutes.
+    interval : int
+        The time to wait between checks for the service being ready.
+    """
     # Deploy
     instance_details = launch_grobid_api_instance(
         region=region,
         instance_type=instance_type,
         storage_size=storage_size,
         tags=tags,
-        instance_name=instance_name,
-        docker_image=docker_image,
-        api_port=api_port,
-        security_group_name=security_group_name,
-        security_group_description=security_group_description,
+        instance_name=grobid_config.instance_name,
+        docker_image=grobid_config.docker_image,
+        api_port=grobid_config.api_port,
+        security_group_name=grobid_config.security_group_name,
+        security_group_description=grobid_config.security_group_description,
         startup_script_template_path=startup_script_template_path,
     )
 
     # Wait for the service to be ready
     try:
         wait_for_service_ready(
+            docker_image=grobid_config.docker_image,
             api_url=instance_details.api_url,
             timeout=timeout,
             interval=interval,

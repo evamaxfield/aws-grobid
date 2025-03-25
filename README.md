@@ -9,17 +9,32 @@ Deploy GROBID on AWS EC2 using Python.
 ```python
 import aws_grobid
 
+# There are a few different pre-canned configurations available:
+
+# Base GROBID service w/ CRF only models
+# aws_grobid.GROBIDDeploymentConfigs.grobid_lite
+
+# Base GROBID service w/ Deep Learning models
+# aws_grobid.GROBIDDeploymentConfigs.grobid_full
+
+# Software Mentions annotation service w/ Deep Learning models
+# aws_grobid.GROBIDDeploymentConfigs.software_mentions
+
 # Create a new GROBID instance and wait for it to be ready
 # This generally takes about 6 minutes
 # Instance is automatically torn down if the
 # GROBID service is not available within 7 minutes
-instance_details = aws_grobid.deploy_and_wait_for_ready()
+instance_details = aws_grobid.deploy_and_wait_for_ready(
+  deployment_config=aws_grobid.DeploymentConfigs.grobid_lite,
+)
 
 # You can also specify the instance type, region, tags, etc.
 # instance_details = aws_grobid.deploy_and_wait_for_ready(
-#   instance_type="m5.2xlarge",  # default: "m6a.4xlarge"
-#   region="us-east-2",  # default: "us-west-2"
-#   tags={"awsApplication": "..."},  # default: None
+#   deployment_config=aws_grobid.DeploymentConfigs.grobid_full,
+#   instance_type='c5.4xlarge',
+#   region='us-east-1',
+#   tags={'awsApplication': 'arn:...'},
+#   timeout=300,  # 5 minutes
 # )
 
 # Use the instance to process a PDF file
@@ -37,8 +52,3 @@ aws_grobid.terminate_instance(
 When providing an instance type that has GPUs available, we automatically pass the GPU flag to the GROBID service. This allows GROBID to utilize the GPU for processing, which can significantly speed up the extraction of information from documents.
 
 **Note:** The first time you make a call to the GROBID service, it may take a minute or so to warm up the service. Subsequent calls will be much faster.
-
-## TODO
-
-- Add support for GROBID base vs Software Mentions deployment
-- Add CLI
