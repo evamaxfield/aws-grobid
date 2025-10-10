@@ -48,13 +48,13 @@ lint = [
 dev = [
   "ipython",
   "jupyterlab",
+  "boto3-stubs[ec2]>=1.34,<2",
 ]
 
 # entry points
 # https://peps.python.org/pep-0621/#entry-points
-# [project.entry-points."console_scripts"]
-# rs-graph-data = "rs_graph.bin.data:main"
-# rs-graph-pipelines = "rs_graph.bin.pipelines:main"
+[project.scripts]
+aws-grobid = "aws_grobid.bin.cli:main"
 
 # build settings
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
