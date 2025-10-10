@@ -44,7 +44,7 @@ class GROBIDDeploymentConfig:
     security_group_description: str
 
 
-BASE_GROBID_LITE_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
+BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-lite-api-server",
     docker_image="lfoppiano/grobid:0.8.1",
     api_port=8070,
@@ -70,7 +70,7 @@ SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
 
 
 class GROBIDDeploymentConfigs:
-    grobid_lite = BASE_GROBID_LITE_DEPLOYMENT_CONFIG
+    grobid_crf = BASE_GROBID_CRF_DEPLOYMENT_CONFIG
     grobid_full = BASE_GROBID_FULL_DEPLOYMENT_CONFIG
     software_mentions = SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG
 
@@ -494,7 +494,7 @@ def wait_for_service_ready(
 
 
 def deploy_and_wait_for_ready(
-    grobid_config: GROBIDDeploymentConfig = GROBIDDeploymentConfigs.grobid_lite,
+    grobid_config: GROBIDDeploymentConfig = GROBIDDeploymentConfigs.grobid_crf,
     instance_type: str = "m6a.4xlarge",
     storage_size: int = 28,
     region: str = "us-west-2",
