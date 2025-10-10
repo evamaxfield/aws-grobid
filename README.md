@@ -28,7 +28,7 @@ import requests
 # Instance is automatically torn down if the
 # GROBID service is not available within 7 minutes
 instance_details = aws_grobid.deploy_and_wait_for_ready(
-  deployment_config=aws_grobid.GROBIDDeploymentConfigs.software_mentions,
+  grobid_config=aws_grobid.GROBIDDeploymentConfigs.software_mentions,
 )
 
 # You can also specify the instance type, region, tags, etc.
