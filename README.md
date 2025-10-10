@@ -15,7 +15,7 @@ import requests
 # There are a few different pre-canned configurations available:
 
 # Base GROBID service w/ CRF only models
-# aws_grobid.GROBIDDeploymentConfigs.grobid_lite
+# aws_grobid.GROBIDDeploymentConfigs.grobid_crf
 
 # Base GROBID service w/ Deep Learning models
 # aws_grobid.GROBIDDeploymentConfigs.grobid_full
