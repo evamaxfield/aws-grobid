@@ -7,7 +7,10 @@ Deploy GROBID on AWS EC2 using Python.
 ## Usage
 
 ```python
+import json
+
 import aws_grobid
+import requests
 
 # There are a few different pre-canned configurations available:
 
@@ -25,22 +28,37 @@ import aws_grobid
 # Instance is automatically torn down if the
 # GROBID service is not available within 7 minutes
 instance_details = aws_grobid.deploy_and_wait_for_ready(
-  deployment_config=aws_grobid.DeploymentConfigs.grobid_lite,
+  deployment_config=aws_grobid.GROBIDDeploymentConfigs.software_mentions,
 )
 
 # You can also specify the instance type, region, tags, etc.
 # instance_details = aws_grobid.deploy_and_wait_for_ready(
-#   deployment_config=aws_grobid.DeploymentConfigs.grobid_full,
+#   grobid_config=aws_grobid.GROBIDDeploymentConfigs.software_mentions,
 #   instance_type='c5.4xlarge',
 #   region='us-east-1',
 #   tags={'awsApplication': 'arn:...'},
-#   timeout=300,  # 5 minutes
+#   timeout=420,  # 7 minutes
 # )
 
 # Use the instance to process a PDF file
 # The API URL is available from:
 # instance_details.api_url
 # ...
+
+# Example request to GROBID Software Mentions Server for Annotation
+with open("example.pdf", "rb") as open_pdf:
+  response = requests.post(
+    f"{instance_details.api_url}/service/annotateSoftwarePDF",
+    files={"input": open_pdf},
+    data={"disambiguate": 1},
+    timeout=180,  # 3 minutes
+  )
+  response.raise_for_status()
+  response_data = response.json()
+
+# Write response to JSON
+with open("example-output.json", "w") as open_json:
+  json.dump(response_data, open_json)
 
 # Teardown the instance when done
 aws_grobid.terminate_instance(
