@@ -46,7 +46,7 @@ class GROBIDDeploymentConfig:
 
 BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-lite-api-server",
-    docker_image="lfoppiano/grobid:0.8.2",
+    docker_image="grobid/grobid:0.8.2-crf",
     api_port=8070,
     security_group_name="grobid-lite-api-server-sg",
     security_group_description="Security group for GROBID Lite API server",
@@ -54,7 +54,7 @@ BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
 
 BASE_GROBID_FULL_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-full-api-server",
-    docker_image="grobid/grobid:0.8.2",
+    docker_image="grobid/grobid:0.8.2-full",
     api_port=8070,
     security_group_name="grobid-full-api-server-sg",
     security_group_description="Security group for GROBID Full API server",
