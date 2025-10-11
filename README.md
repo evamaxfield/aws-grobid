@@ -2,7 +2,26 @@
 
 Deploy GROBID on AWS EC2 using Python.
 
-**Note:** The deployed GROBID service is publicly available on the internet. It is best practice to always teardown the instance when not in use. Spinning up new instances is fast and easy.
+**Note:** The deployed EC2 GROBID service will be publicly available on the internet. It is best practice (and more "economically sustainable") to always teardown the instance when not in use. Spinning up new instances is fast and easy.
+
+## Prerequisites
+
+Before using this tool, ensure you have:
+
+1. **AWS Account** with appropriate permissions (see [AWS_PERMISSIONS.md](AWS_PERMISSIONS.md))
+2. **AWS Credentials** configured via AWS profiles or environment variables
+3. **Required IAM Permissions** for EC2 operations
+
+### Quick Setup
+```bash
+# Configure AWS profile
+aws configure --profile your-profile-name
+
+# Test your credentials
+aws sts get-caller-identity --profile your-profile-name
+```
+
+For detailed setup instructions, see the [AWS Permissions Guide](AWS_PERMISSIONS.md).
 
 ## Usage
 
@@ -72,3 +91,31 @@ When providing an instance type that has GPUs available, we automatically pass t
 **Note:** The first time you make a call to the GROBID service, it may take a minute or so to warm up the service. Subsequent calls will be much faster.
 
 We additionally will automatically pick up `.env` controlled envionment variables. This is useful for setting the `AWS_PROFILE` or `AWS_SECRET_ACCESS_KEY` and `AWS_ACCESS_KEY_ID` environment variables.
+
+
+## CLI
+
+After installing the package, a CLI is available as `aws-grobid`.
+
+- Deploy and wait until ready (prints instance details as JSON):
+
+```bash
+# Deploy with default credentials
+aws-grobid deploy --config crf --instance-type m6a.4xlarge --region us-west-2 \
+  --tag awsApplication=example --timeout 420
+
+# Deploy with specific AWS profile
+aws-grobid deploy --config crf --instance-type m6a.4xlarge --region us-west-2 \
+  --tag awsApplication=example --timeout 420 --profile your-profile-name
+```
+
+- Terminate an instance:
+
+```bash
+# Terminate with default credentials
+aws-grobid terminate --region us-west-2 --instance-id i-0123456789abcdef0
+
+# Terminate with specific AWS profile
+aws-grobid terminate --region us-west-2 --instance-id i-0123456789abcdef0 \
+  --profile your-profile-name
+```

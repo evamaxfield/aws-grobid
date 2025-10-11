@@ -8,12 +8,16 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import boto3
-import boto3.session
 import requests
 from dotenv import load_dotenv
 from jinja2 import Template
+
+if TYPE_CHECKING:
+    from mypy_boto3_ec2 import EC2Client, EC2ServiceResource
+    from mypy_boto3_ec2.service_resource import Instance as EC2Instance
 
 #######################################################################################
 
@@ -25,13 +29,8 @@ UBUNTU_AMI_DATA_PATH = STATIC_DIR / "ubuntu-amis.json"
 
 # Constants
 GPU_INSTANCE_TYPES = [
-    "P",
-    "G",
-    "Trn",
-    "Inf",
-    "DL",
-    "F",
-    "VT",
+    "p",  # NVIDIA GPU families (P*)
+    "g",  # NVIDIA GPU families (G*)
 ]
 
 
@@ -45,11 +44,11 @@ class GROBIDDeploymentConfig:
 
 
 BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
-    instance_name="grobid-lite-api-server",
+    instance_name="grobid-crf-api-server",
     docker_image="grobid/grobid:0.8.2-crf",
     api_port=8070,
-    security_group_name="grobid-lite-api-server-sg",
-    security_group_description="Security group for GROBID Lite API server",
+    security_group_name="grobid-crf-api-server-sg",
+    security_group_description="Security group for GROBID CRF API server",
 )
 
 BASE_GROBID_FULL_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
@@ -82,7 +81,7 @@ log = logging.getLogger(__name__)
 #######################################################################################
 
 
-def get_default_vpc_id(ec2_client: boto3.session.Session.client) -> str:
+def get_default_vpc_id(ec2_client: "EC2Client") -> str:
     """Get the default VPC ID for the region."""
     response = ec2_client.describe_vpcs(
         Filters=[{"Name": "isDefault", "Values": ["true"]}]
@@ -93,7 +92,7 @@ def get_default_vpc_id(ec2_client: boto3.session.Session.client) -> str:
 
 
 def create_security_group(
-    ec2_client: boto3.session.Session.client,
+    ec2_client: "EC2Client",
     name: str,
     description: str,
 ) -> str:
@@ -115,7 +114,7 @@ def create_security_group(
 
 
 def add_security_group_rules(
-    ec2_client: boto3.session.Session.client,
+    ec2_client: "EC2Client",
     security_group_id: str,
     api_port: int,
 ) -> None:
@@ -151,7 +150,7 @@ def add_security_group_rules(
 
 
 def get_image_default_snapshot_id(
-    ec2_client: boto3.session.Session.client,
+    ec2_client: "EC2Client",
     vm_image_id: str,
 ) -> str:
     """Get the default snapshot ID for the specified base image."""
@@ -193,8 +192,8 @@ def _parse_instance_type(instance_type: str) -> InstanceTypeDetails:
 
 
 def launch_instance(
-    ec2_client: boto3.session.Session.client,
-    ec2_resource: boto3.session.Session.resource,
+    ec2_client: "EC2Client",
+    ec2_resource: "EC2ServiceResource",
     region: str,
     security_group_id: str,
     instance_type: str,
@@ -204,18 +203,16 @@ def launch_instance(
     api_port: int,
     startup_script_template_path: str,
     tags: list[str] | dict[str, str] | None = None,
-) -> boto3.resources.factory.ec2.Instance:
+) -> "EC2Instance":
     """Launch an EC2 instance with the specified settings."""
     # Parse instance type
     instance_type_details = _parse_instance_type(instance_type)
 
-    # Determine if GPU instance requested from instance type
-    is_gpu_instance = any(
-        gpu.lower() in instance_type_details.primary_type.lower()
-        for gpu in GPU_INSTANCE_TYPES
-    )
-    if is_gpu_instance:
-        log.debug(f"Detected GPU instance type: {instance_type}")
+    # Determine if NVIDIA GPU instance requested from primary family
+    primary = instance_type_details.primary_type.lower()
+    is_nvidia_gpu_instance = primary.startswith("g") or primary.startswith("p")
+    if is_nvidia_gpu_instance:
+        log.debug(f"Detected NVIDIA GPU instance type: {instance_type}")
         # Need to install nvidia-docker on the instance
         with open(NVIDIA_DOCKER_INSTALLATION_PATH) as open_f:
             nvidia_docker_installation = open_f.read()
@@ -224,13 +221,13 @@ def launch_instance(
         # Handle larger storage requirement
         if storage_size < 75:
             log.warning(
-                "GPU instances require a minimum storage size of 75GB. "
+                "NVIDIA GPU instances require a minimum storage size of 75GB. "
                 "Increasing storage size to meet requirement."
             )
             storage_size = 96
 
     else:
-        log.debug(f"Detected non-GPU instance type: {instance_type}")
+        log.debug(f"Detected non-NVIDIA-GPU instance type: {instance_type}")
         nvidia_docker_installation = ""
         gpu_attach = ""
 
@@ -251,7 +248,7 @@ def launch_instance(
         ami_data = json.load(f)
 
     # Determine if we are looking for arm64 or x86_64/amd64 architecture
-    # based on the instance type
+    # based on the instance type attachments ("g" suffix indicates Graviton/ARM)
     if "g" in instance_type_details.attachments:
         selected_arch = "arm64"
     else:
@@ -259,13 +256,12 @@ def launch_instance(
 
     # Iter over ami data to find image id
     # for the specified region and architecture and gpu
-    # example ami piece:
     vm_image_id = ""
     for ami_piece in ami_data:
         if (
             ami_piece["region"] == region
             and ami_piece["arch"] == selected_arch
-            and ami_piece["gpu"] == is_gpu_instance
+            and ami_piece["gpu"] == is_nvidia_gpu_instance
         ):
             vm_image_id = ami_piece["ami_id"]
             break
@@ -275,7 +271,7 @@ def launch_instance(
         raise ValueError(
             f"No AMI found for region {region}, "
             f"architecture {selected_arch}, "
-            f"and GPU {is_gpu_instance} combination"
+            f"and GPU {is_nvidia_gpu_instance} combination"
         )
 
     # Parse tags
@@ -284,7 +280,7 @@ def launch_instance(
     if isinstance(tags, list):
         # Split each key-value pair into a new item in a dict
         parsed_tags = [
-            {"Key": tag.split("=")[0], "Value": tag.split("=")[1]} for tag in tags
+            {"Key": tag.split("=", 1)[0], "Value": tag.split("=", 1)[1]} for tag in tags
         ]
     elif isinstance(tags, dict):
         parsed_tags = [{"Key": k, "Value": v} for k, v in tags.items()]
@@ -354,7 +350,7 @@ def launch_instance(
 
 @dataclass
 class EC2InstanceDetails:
-    instance: boto3.session.Session.resource.Instance
+    instance: "EC2Instance"
     region: str
     instance_id: str
     instance_type: str
@@ -376,6 +372,7 @@ def launch_grobid_api_instance(
         "Security group for GROBID Software Mentions API server"
     ),
     startup_script_template_path: str = str(DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH),
+    profile_name: str | None = None,
 ) -> EC2InstanceDetails:
     """Launch a GROBID Software Mentions API EC2 instance."""
     # Always load the environment variables from the .env file
@@ -383,8 +380,13 @@ def launch_grobid_api_instance(
     load_dotenv()
 
     # Create boto3 clients and resources
-    ec2_client = boto3.client("ec2", region_name=region)
-    ec2_resource = boto3.resource("ec2", region_name=region)
+    if profile_name:
+        session = boto3.Session(profile_name=profile_name, region_name=region)
+    else:
+        session = boto3.Session(region_name=region)
+
+    ec2_client = session.client("ec2")
+    ec2_resource = session.resource("ec2")
 
     # Create security group
     log.debug("Creating security group...")
@@ -447,6 +449,7 @@ def launch_grobid_api_instance(
 def terminate_instance(
     region: str,
     instance_id: str,
+    profile_name: str | None = None,
 ) -> None:
     """Terminate the specified EC2 instance."""
     # Always load the environment variables from the .env file
@@ -454,7 +457,12 @@ def terminate_instance(
     load_dotenv()
 
     log.debug(f"Terminating instance {instance_id} in region {region}...")
-    ec2_client = boto3.client("ec2", region_name=region)
+    if profile_name:
+        session = boto3.Session(profile_name=profile_name, region_name=region)
+    else:
+        session = boto3.Session(region_name=region)
+
+    ec2_client = session.client("ec2")
     ec2_client.terminate_instances(InstanceIds=[instance_id])
     log.debug(f"Instance {instance_id} is now terminating")
 
@@ -502,11 +510,12 @@ def deploy_and_wait_for_ready(
     startup_script_template_path: str = str(DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH),
     timeout: int = 420,  # 7 minutes
     interval: int = 10,  # seconds
+    profile_name: str | None = None,
 ) -> EC2InstanceDetails:
     """
     Deploy GROBID server and wait for it to be ready.
 
-    Defaults to deploying the lightweight CRF only model GROBID server.
+    Defaults to deploying the CRF-only model GROBID server.
 
     Parameters
     ----------
@@ -526,6 +535,8 @@ def deploy_and_wait_for_ready(
         The maximum time to wait for the service to be ready. Default: 7 minutes.
     interval : int
         The time to wait between checks for the service being ready.
+    profile_name : str | None
+        The AWS profile name to use for authentication.
     """
     # Deploy
     instance_details = launch_grobid_api_instance(
@@ -539,6 +550,7 @@ def deploy_and_wait_for_ready(
         security_group_name=grobid_config.security_group_name,
         security_group_description=grobid_config.security_group_description,
         startup_script_template_path=startup_script_template_path,
+        profile_name=profile_name,
     )
 
     # Wait for the service to be ready
@@ -551,7 +563,7 @@ def deploy_and_wait_for_ready(
         )
     except TimeoutError as e:
         log.error(f"Service did not become ready: {e}")
-        terminate_instance(region=region, instance_id=instance_details.instance_id)
+        terminate_instance(region=region, instance_id=instance_details.instance_id, profile_name=profile_name)
         raise e
 
     # All clear!
