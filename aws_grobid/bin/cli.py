@@ -47,6 +47,7 @@ def cmd_deploy(args: argparse.Namespace) -> int:
         tags=parse_tags(args.tag),
         timeout=args.timeout,
         interval=args.interval,
+        profile_name=args.profile,
     )
 
     print(
@@ -66,7 +67,7 @@ def cmd_deploy(args: argparse.Namespace) -> int:
 
 
 def cmd_terminate(args: argparse.Namespace) -> int:
-    terminate_instance(region=args.region, instance_id=args.instance_id)
+    terminate_instance(region=args.region, instance_id=args.instance_id, profile_name=args.profile)
     print(json.dumps({"terminated": True, "instance_id": args.instance_id}))
     return 0
 
@@ -115,11 +116,19 @@ def build_parser() -> argparse.ArgumentParser:
         default=10,
         help="Seconds between readiness checks",
     )
+    p_deploy.add_argument(
+        "--profile",
+        help="AWS profile name from credentials file",
+    )
     p_deploy.set_defaults(func=cmd_deploy)
 
     p_term = sub.add_parser("terminate", help="Terminate an EC2 instance")
     p_term.add_argument("--region", required=True)
     p_term.add_argument("--instance-id", required=True)
+    p_term.add_argument(
+        "--profile",
+        help="AWS profile name from credentials file",
+    )
     p_term.set_defaults(func=cmd_terminate)
 
     return p

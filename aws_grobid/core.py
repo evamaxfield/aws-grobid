@@ -372,6 +372,7 @@ def launch_grobid_api_instance(
         "Security group for GROBID Software Mentions API server"
     ),
     startup_script_template_path: str = str(DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH),
+    profile_name: str | None = None,
 ) -> EC2InstanceDetails:
     """Launch a GROBID Software Mentions API EC2 instance."""
     # Always load the environment variables from the .env file
@@ -379,8 +380,13 @@ def launch_grobid_api_instance(
     load_dotenv()
 
     # Create boto3 clients and resources
-    ec2_client = boto3.client("ec2", region_name=region)
-    ec2_resource = boto3.resource("ec2", region_name=region)
+    if profile_name:
+        session = boto3.Session(profile_name=profile_name, region_name=region)
+    else:
+        session = boto3.Session(region_name=region)
+
+    ec2_client = session.client("ec2")
+    ec2_resource = session.resource("ec2")
 
     # Create security group
     log.debug("Creating security group...")
@@ -443,6 +449,7 @@ def launch_grobid_api_instance(
 def terminate_instance(
     region: str,
     instance_id: str,
+    profile_name: str | None = None,
 ) -> None:
     """Terminate the specified EC2 instance."""
     # Always load the environment variables from the .env file
@@ -450,7 +457,12 @@ def terminate_instance(
     load_dotenv()
 
     log.debug(f"Terminating instance {instance_id} in region {region}...")
-    ec2_client = boto3.client("ec2", region_name=region)
+    if profile_name:
+        session = boto3.Session(profile_name=profile_name, region_name=region)
+    else:
+        session = boto3.Session(region_name=region)
+
+    ec2_client = session.client("ec2")
     ec2_client.terminate_instances(InstanceIds=[instance_id])
     log.debug(f"Instance {instance_id} is now terminating")
 
@@ -498,6 +510,7 @@ def deploy_and_wait_for_ready(
     startup_script_template_path: str = str(DEFAULT_STARTUP_SCRIPT_TEMPLATE_PATH),
     timeout: int = 420,  # 7 minutes
     interval: int = 10,  # seconds
+    profile_name: str | None = None,
 ) -> EC2InstanceDetails:
     """
     Deploy GROBID server and wait for it to be ready.
@@ -522,6 +535,8 @@ def deploy_and_wait_for_ready(
         The maximum time to wait for the service to be ready. Default: 7 minutes.
     interval : int
         The time to wait between checks for the service being ready.
+    profile_name : str | None
+        The AWS profile name to use for authentication.
     """
     # Deploy
     instance_details = launch_grobid_api_instance(
@@ -535,6 +550,7 @@ def deploy_and_wait_for_ready(
         security_group_name=grobid_config.security_group_name,
         security_group_description=grobid_config.security_group_description,
         startup_script_template_path=startup_script_template_path,
+        profile_name=profile_name,
     )
 
     # Wait for the service to be ready
@@ -547,7 +563,7 @@ def deploy_and_wait_for_ready(
         )
     except TimeoutError as e:
         log.error(f"Service did not become ready: {e}")
-        terminate_instance(region=region, instance_id=instance_details.instance_id)
+        terminate_instance(region=region, instance_id=instance_details.instance_id, profile_name=profile_name)
         raise e
 
     # All clear!
