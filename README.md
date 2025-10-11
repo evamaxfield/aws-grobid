@@ -2,7 +2,7 @@
 
 Deploy GROBID on AWS EC2 using Python.
 
-Note: The deployed GROBID service is publicly available on the internet. It is best practice to always teardown the instance when not in use. Spinning up new instances is fast and easy.
+**Note:** The deployed EC2 GROBID service will be publicly available on the internet. It is best practice (and more "economically sustainable") to always teardown the instance when not in use. Spinning up new instances is fast and easy.
 
 ## Usage (Python)
 
