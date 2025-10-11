@@ -28,6 +28,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
   "boto3>=1,<2",
+  "boto3-stubs==1.40.49",
   "Jinja2>=3,<4",
   "python-dotenv==1.0.1",
   "requests>=2,<3",

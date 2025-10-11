@@ -72,8 +72,6 @@ class GROBIDDeploymentConfigs:
     grobid_crf = BASE_GROBID_CRF_DEPLOYMENT_CONFIG
     grobid_full = BASE_GROBID_FULL_DEPLOYMENT_CONFIG
     software_mentions = SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG
-    # Backwards compatibility alias (deprecated)
-    grobid_lite = grobid_crf
 
 
 #######################################################################################
