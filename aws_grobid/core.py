@@ -45,7 +45,7 @@ class GROBIDDeploymentConfig:
 
 BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-crf-api-server",
-    docker_image="lfoppiano/grobid:0.8.2",
+    docker_image="grobid/grobid:0.8.2-crf",
     api_port=8070,
     security_group_name="grobid-crf-api-server-sg",
     security_group_description="Security group for GROBID CRF API server",
@@ -53,7 +53,7 @@ BASE_GROBID_CRF_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
 
 BASE_GROBID_FULL_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-full-api-server",
-    docker_image="grobid/grobid:0.8.2",
+    docker_image="grobid/grobid:0.8.2-full",
     api_port=8070,
     security_group_name="grobid-full-api-server-sg",
     security_group_description="Security group for GROBID Full API server",
@@ -61,7 +61,7 @@ BASE_GROBID_FULL_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
 
 SOFTWARE_MENTIONS_DEPLOYMENT_CONFIG = GROBIDDeploymentConfig(
     instance_name="grobid-software-mentions-api-server",
-    docker_image="grobid/software-mentions:0.8.2",
+    docker_image="lfoppiano/software-mentions:0.8.2",
     api_port=8060,
     security_group_name="grobid-software-mentions-api-server-sg",
     security_group_description="Security group for GROBID Software Mentions API server",
@@ -367,7 +367,7 @@ def launch_grobid_api_instance(
     storage_size: int = 28,
     tags: list[str] | dict[str, str] | None = None,
     instance_name: str = "grobid-software-mentions-api-server",
-    docker_image: str = "grobid/software-mentions:0.8.2",
+    docker_image: str = "lfoppiano/software-mentions:0.8.2",
     api_port: int = 8060,
     security_group_name: str = "grobid-software-mentions-api-server-sg",
     security_group_description: str = (
