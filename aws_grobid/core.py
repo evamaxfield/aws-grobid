@@ -81,7 +81,7 @@ log = logging.getLogger(__name__)
 #######################################################################################
 
 
-def get_default_vpc_id(ec2_client: "EC2Client") -> str:
+def get_default_vpc_id(ec2_client: EC2Client) -> str:
     """Get the default VPC ID for the region."""
     response = ec2_client.describe_vpcs(
         Filters=[{"Name": "isDefault", "Values": ["true"]}]
@@ -92,7 +92,7 @@ def get_default_vpc_id(ec2_client: "EC2Client") -> str:
 
 
 def create_security_group(
-    ec2_client: "EC2Client",
+    ec2_client: EC2Client,
     name: str,
     description: str,
 ) -> str:
@@ -114,7 +114,7 @@ def create_security_group(
 
 
 def add_security_group_rules(
-    ec2_client: "EC2Client",
+    ec2_client: EC2Client,
     security_group_id: str,
     api_port: int,
 ) -> None:
@@ -150,7 +150,7 @@ def add_security_group_rules(
 
 
 def get_image_default_snapshot_id(
-    ec2_client: "EC2Client",
+    ec2_client: EC2Client,
     vm_image_id: str,
 ) -> str:
     """Get the default snapshot ID for the specified base image."""
@@ -192,8 +192,8 @@ def _parse_instance_type(instance_type: str) -> InstanceTypeDetails:
 
 
 def launch_instance(
-    ec2_client: "EC2Client",
-    ec2_resource: "EC2ServiceResource",
+    ec2_client: EC2Client,
+    ec2_resource: EC2ServiceResource,
     region: str,
     security_group_id: str,
     instance_type: str,
@@ -203,7 +203,7 @@ def launch_instance(
     api_port: int,
     startup_script_template_path: str,
     tags: list[str] | dict[str, str] | None = None,
-) -> "EC2Instance":
+) -> EC2Instance:
     """Launch an EC2 instance with the specified settings."""
     # Parse instance type
     instance_type_details = _parse_instance_type(instance_type)
@@ -350,7 +350,7 @@ def launch_instance(
 
 @dataclass
 class EC2InstanceDetails:
-    instance: "EC2Instance"
+    instance: EC2Instance
     region: str
     instance_id: str
     instance_type: str
@@ -425,7 +425,7 @@ def launch_grobid_api_instance(
         tags=tags,
     )
     log.info(f"   Instance launch initiated: {instance.id}")
-    log.info(f"⏳ Waiting for instance to enter 'running' state...")
+    log.info("⏳ Waiting for instance to enter 'running' state...")
 
     # Wait for the instance to be running
     instance.wait_until_running()
@@ -498,11 +498,16 @@ def wait_for_service_ready(
             response = requests.get(alive_url, timeout=5)
             if response.status_code == 200:
                 elapsed_time = int(time.time() - start_time)
-                log.info(f"✅ Service is ready! (took {elapsed_time}s, {attempts} attempts)")
+                log.info(
+                    f"✅ Service is ready! (took {elapsed_time}s, {attempts} attempts)"
+                )
                 return
         except requests.RequestException as e:
             elapsed_time = int(time.time() - start_time)
-            log.info(f"   Attempt {attempts} ({elapsed_time}s elapsed): Service not ready yet - {e}")
+            log.info(
+                f"   Attempt {attempts} ({elapsed_time}s elapsed): "
+                f"Service not ready yet - {e}"
+            )
 
         if time.time() - start_time > timeout:
             raise TimeoutError(f"Service did not become ready within {timeout} seconds")
@@ -567,7 +572,10 @@ def deploy_and_wait_for_ready(
         profile_name=profile_name,
     )
 
-    log.info("🐳 Instance is running, now waiting for Docker container to start and service to be ready...")
+    log.info(
+        "🐳 Instance is running, now waiting for Docker container "
+        "to start and service to be ready..."
+    )
 
     # Wait for the service to be ready
     try:
@@ -579,10 +587,18 @@ def deploy_and_wait_for_ready(
         )
     except TimeoutError as e:
         log.error(f"❌ Service did not become ready: {e}")
-        log.error(f"🧹 Cleaning up: terminating instance {instance_details.instance_id}")
-        terminate_instance(region=region, instance_id=instance_details.instance_id, profile_name=profile_name)
+        log.error(
+            f"🧹 Cleaning up: terminating instance {instance_details.instance_id}",
+        )
+        terminate_instance(
+            region=region,
+            instance_id=instance_details.instance_id,
+            profile_name=profile_name,
+        )
         raise e
 
     # All clear!
-    log.info(f"🎉 GROBID API is fully ready and accessible at {instance_details.api_url}")
+    log.info(
+        f"🎉 GROBID API is fully ready and accessible at {instance_details.api_url}"
+    )
     return instance_details

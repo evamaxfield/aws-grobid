@@ -5,7 +5,6 @@ import argparse
 import json
 import logging
 import sys
-from typing import Dict, List
 
 from aws_grobid import (
     GROBIDDeploymentConfigs,
@@ -14,10 +13,10 @@ from aws_grobid import (
 )
 
 
-def parse_tags(tag_args: List[str] | None) -> Dict[str, str] | None:
+def parse_tags(tag_args: list[str] | None) -> dict[str, str] | None:
     if not tag_args:
         return None
-    tags: Dict[str, str] = {}
+    tags: dict[str, str] = {}
     for t in tag_args:
         if "=" not in t:
             raise argparse.ArgumentTypeError(
@@ -34,8 +33,8 @@ def cmd_deploy(args: argparse.Namespace) -> int:
     # Configure logging to show progress
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     config_map = {
@@ -47,7 +46,7 @@ def cmd_deploy(args: argparse.Namespace) -> int:
     }
     grobid_config = config_map[args.config]
 
-    print(f"🚀 Starting deployment of GROBID server...")
+    print("🚀 Starting deployment of GROBID server...")
     print(f"   Configuration: {args.config}")
     print(f"   Instance type: {args.instance_type}")
     print(f"   Region: {args.region}")
@@ -89,18 +88,20 @@ def cmd_terminate(args: argparse.Namespace) -> int:
     # Configure logging to show progress
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    print(f"🛑 Terminating EC2 instance...")
+    print("🛑 Terminating EC2 instance...")
     print(f"   Instance ID: {args.instance_id}")
     print(f"   Region: {args.region}")
     if args.profile:
         print(f"   AWS profile: {args.profile}")
     print()
 
-    terminate_instance(region=args.region, instance_id=args.instance_id, profile_name=args.profile)
+    terminate_instance(
+        region=args.region, instance_id=args.instance_id, profile_name=args.profile
+    )
 
     print("✅ Instance termination initiated successfully!")
     print(json.dumps({"terminated": True, "instance_id": args.instance_id}))
@@ -116,7 +117,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--config",
         choices=["crf", "full", "software", "lite"],
         default="crf",
-        help="Which pre-canned GROBID config to deploy (use 'crf'; 'lite' is deprecated)",
+        help=(
+            "Which pre-canned GROBID config to deploy "
+            "(use 'crf'; 'lite' is deprecated)"
+        ),
     )
     p_deploy.add_argument(
         "--instance-type",
@@ -169,7 +173,7 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
-def main(argv: List[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
