@@ -41,6 +41,7 @@ import requests
 
 # Software Mentions annotation service w/ Deep Learning models
 # aws_grobid.GROBIDDeploymentConfigs.software_mentions
+# NOTE: You also need to change the URL endpoint specified below for Software mentions
 
 # Create a new GROBID instance and wait for it to be ready
 # This generally takes about 6 minutes
@@ -64,10 +65,11 @@ instance_details = aws_grobid.deploy_and_wait_for_ready(
 # instance_details.api_url
 # ...
 
-# Example request to GROBID Software Mentions Server for Annotation
+# Example request to GROBID Server for Annotation
 with open("example.pdf", "rb") as open_pdf:
   response = requests.post(
-    f"{instance_details.api_url}/service/annotateSoftwarePDF",
+    # NOTE: Use f"{instance_details.api_url}/service/annotateSoftwarePDF" for Software mentions
+    f"{instance_details.api_url}/api/processFulltextDocument",
     files={"input": open_pdf},
     data={"disambiguate": 1},
     timeout=180,  # 3 minutes
