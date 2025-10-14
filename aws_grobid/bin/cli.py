@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from typing import Dict, List
 
@@ -30,6 +31,13 @@ def parse_tags(tag_args: List[str] | None) -> Dict[str, str] | None:
 
 
 def cmd_deploy(args: argparse.Namespace) -> int:
+    # Configure logging to show progress
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
     config_map = {
         "crf": GROBIDDeploymentConfigs.grobid_crf,
         "full": GROBIDDeploymentConfigs.grobid_full,
@@ -38,6 +46,15 @@ def cmd_deploy(args: argparse.Namespace) -> int:
         "lite": GROBIDDeploymentConfigs.grobid_crf,
     }
     grobid_config = config_map[args.config]
+
+    print(f"🚀 Starting deployment of GROBID server...")
+    print(f"   Configuration: {args.config}")
+    print(f"   Instance type: {args.instance_type}")
+    print(f"   Region: {args.region}")
+    print(f"   Storage size: {args.storage_size} GiB")
+    if args.profile:
+        print(f"   AWS profile: {args.profile}")
+    print()
 
     instance = deploy_and_wait_for_ready(
         grobid_config=grobid_config,
@@ -50,6 +67,8 @@ def cmd_deploy(args: argparse.Namespace) -> int:
         profile_name=args.profile,
     )
 
+    print()
+    print("✅ Deployment completed successfully!")
     print(
         json.dumps(
             {
@@ -67,7 +86,23 @@ def cmd_deploy(args: argparse.Namespace) -> int:
 
 
 def cmd_terminate(args: argparse.Namespace) -> int:
+    # Configure logging to show progress
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    print(f"🛑 Terminating EC2 instance...")
+    print(f"   Instance ID: {args.instance_id}")
+    print(f"   Region: {args.region}")
+    if args.profile:
+        print(f"   AWS profile: {args.profile}")
+    print()
+
     terminate_instance(region=args.region, instance_id=args.instance_id, profile_name=args.profile)
+
+    print("✅ Instance termination initiated successfully!")
     print(json.dumps({"terminated": True, "instance_id": args.instance_id}))
     return 0
 

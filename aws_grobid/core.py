@@ -379,9 +379,11 @@ def launch_grobid_api_instance(
     # as they may contain AWS credentials
     load_dotenv()
 
+    log.info(f"🔧 Setting up AWS session for region {region}")
     # Create boto3 clients and resources
     if profile_name:
         session = boto3.Session(profile_name=profile_name, region_name=region)
+        log.info(f"   Using AWS profile: {profile_name}")
     else:
         session = boto3.Session(region_name=region)
 
@@ -389,16 +391,16 @@ def launch_grobid_api_instance(
     ec2_resource = session.resource("ec2")
 
     # Create security group
-    log.debug("Creating security group...")
+    log.info(f"🛡️  Creating security group: {security_group_name}")
     security_group_id = create_security_group(
         ec2_client=ec2_client,
         name=security_group_name,
         description=security_group_description,
     )
-    log.debug(f"Created security group: {security_group_id}")
+    log.info(f"   Security group created with ID: {security_group_id}")
 
     # Authorize security group ingress rules
-    log.debug("Adding security group rules...")
+    log.info(f"🔐 Configuring security group rules for ports 22, 443, and {api_port}")
     add_security_group_rules(
         ec2_client=ec2_client,
         security_group_id=security_group_id,
@@ -406,7 +408,9 @@ def launch_grobid_api_instance(
     )
 
     # Launch EC2 instance
-    log.debug("Launching EC2 instance...")
+    log.info(f"🚀 Launching EC2 instance {instance_name} ({instance_type})")
+    log.info(f"   Docker image: {docker_image}")
+    log.info(f"   Storage size: {storage_size} GiB")
     instance = launch_instance(
         ec2_client=ec2_client,
         ec2_resource=ec2_resource,
@@ -420,8 +424,8 @@ def launch_grobid_api_instance(
         startup_script_template_path=startup_script_template_path,
         tags=tags,
     )
-    log.debug(f"Instance {instance.id} is now launching")
-    log.debug("Waiting for instance to be running...")
+    log.info(f"   Instance launch initiated: {instance.id}")
+    log.info(f"⏳ Waiting for instance to enter 'running' state...")
 
     # Wait for the instance to be running
     instance.wait_until_running()
@@ -430,10 +434,10 @@ def launch_grobid_api_instance(
     instance.load()
 
     # Log the instance details
-    log.debug(f"Instance {instance.id} is now running")
-    log.debug(f"Public IP address: {instance.public_ip_address}")
-    log.debug(f"Public DNS: {instance.public_dns_name}")
-    log.debug(f"Access your API at: http://{instance.public_ip_address}:{api_port}")
+    log.info(f"✅ Instance {instance.id} is now running")
+    log.info(f"   Public IP: {instance.public_ip_address}")
+    log.info(f"   Public DNS: {instance.public_dns_name}")
+    log.info(f"   API URL: http://{instance.public_ip_address}:{api_port}")
 
     return EC2InstanceDetails(
         instance=instance,
@@ -456,15 +460,17 @@ def terminate_instance(
     # as they may contain AWS credentials
     load_dotenv()
 
-    log.debug(f"Terminating instance {instance_id} in region {region}...")
+    log.info(f"🔧 Setting up AWS session for region {region}")
     if profile_name:
         session = boto3.Session(profile_name=profile_name, region_name=region)
+        log.info(f"   Using AWS profile: {profile_name}")
     else:
         session = boto3.Session(region_name=region)
 
     ec2_client = session.client("ec2")
+    log.info(f"🛑 Terminating instance {instance_id}...")
     ec2_client.terminate_instances(InstanceIds=[instance_id])
-    log.debug(f"Instance {instance_id} is now terminating")
+    log.info(f"✅ Instance {instance_id} termination initiated")
 
 
 def wait_for_service_ready(
@@ -480,19 +486,25 @@ def wait_for_service_ready(
     else:
         alive_url = f"{api_url}/api/isalive"
 
-    log.debug(f"Waiting for service at {api_url} to be ready...")
+    log.info(f"🔍 Waiting for GROBID service to become ready at {api_url}")
+    log.info(f"   Health check endpoint: {alive_url}")
+    log.info(f"   Timeout: {timeout} seconds, checking every {interval} seconds")
+
     start_time = time.time()
+    attempts = 0
     while True:
+        attempts += 1
         try:
-            response = requests.get(alive_url)
+            response = requests.get(alive_url, timeout=5)
             if response.status_code == 200:
-                log.debug("Service is ready")
+                elapsed_time = int(time.time() - start_time)
+                log.info(f"✅ Service is ready! (took {elapsed_time}s, {attempts} attempts)")
                 return
         except requests.RequestException as e:
-            log.debug(f"Service not ready yet: {e}")
+            elapsed_time = int(time.time() - start_time)
+            log.info(f"   Attempt {attempts} ({elapsed_time}s elapsed): Service not ready yet - {e}")
 
-        elapsed_time = time.time() - start_time
-        if elapsed_time > timeout:
+        if time.time() - start_time > timeout:
             raise TimeoutError(f"Service did not become ready within {timeout} seconds")
 
         time.sleep(interval)
@@ -538,6 +550,8 @@ def deploy_and_wait_for_ready(
     profile_name : str | None
         The AWS profile name to use for authentication.
     """
+    log.info("🎯 Starting GROBID deployment process...")
+
     # Deploy
     instance_details = launch_grobid_api_instance(
         region=region,
@@ -553,6 +567,8 @@ def deploy_and_wait_for_ready(
         profile_name=profile_name,
     )
 
+    log.info("🐳 Instance is running, now waiting for Docker container to start and service to be ready...")
+
     # Wait for the service to be ready
     try:
         wait_for_service_ready(
@@ -562,10 +578,11 @@ def deploy_and_wait_for_ready(
             interval=interval,
         )
     except TimeoutError as e:
-        log.error(f"Service did not become ready: {e}")
+        log.error(f"❌ Service did not become ready: {e}")
+        log.error(f"🧹 Cleaning up: terminating instance {instance_details.instance_id}")
         terminate_instance(region=region, instance_id=instance_details.instance_id, profile_name=profile_name)
         raise e
 
     # All clear!
-    log.info(f"GROBID API is ready at {instance_details.api_url}")
+    log.info(f"🎉 GROBID API is fully ready and accessible at {instance_details.api_url}")
     return instance_details
